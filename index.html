@@ -1,11 +1,793 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Teste OK</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mateus Belloni — Concertmaster · Artistic Direction &amp; Concert Production</title>
+<meta name="description" content="Mateus Belloni — Concertmaster, artistic direction and concert production across Europe and Asia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,460;0,9..144,560;0,9..144,680;1,9..144,420&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  :root{
+    --ink:#0e0d10;
+    --ink-soft:#18161b;
+    --ink-soft2:#211e24;
+    --paper:#f3efe3;
+    --paper-dim:#e7ddc7;
+    --brass:#c79a52;
+    --brass-bright:#e6bd82;
+    --oxblood:#6d1f2c;
+    --oxblood-bright:#932c3d;
+    --text-on-ink:#eee9dc;
+    --text-on-ink-dim:#948f83;
+    --text-on-paper:#1a1815;
+    --text-on-paper-dim:#6d675a;
+    --rule-ink:rgba(238,233,220,0.13);
+    --rule-paper:rgba(26,24,21,0.14);
+    --ease:cubic-bezier(.16,.8,.24,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--text-on-ink);
+    font-family:'Inter',sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:clip;
+    cursor:none;
+  }
+  img{display:block;max-width:100%;}
+  a{color:inherit;text-decoration:none;}
+  ::selection{background:var(--brass);color:var(--ink);}
+
+  @media (hover:none), (pointer:coarse){ body{cursor:auto;} #cursor-dot,#cursor-ring{display:none;} }
+
+  /* ---------------- custom cursor / spotlight ---------------- */
+  #cursor-dot,#cursor-ring{
+    position:fixed; top:0; left:0; z-index:9999;
+    pointer-events:none; border-radius:50%;
+    transform:translate(-50%,-50%);
+    mix-blend-mode:difference;
+  }
+  #cursor-dot{width:6px;height:6px;background:var(--brass-bright);transition:opacity .2s;}
+  #cursor-ring{
+    width:34px;height:34px;border:1px solid var(--text-on-ink);
+    transition:width .25s var(--ease), height .25s var(--ease), border-color .25s, opacity .3s;
+    opacity:.7;
+  }
+  #cursor-ring.hovered{width:58px;height:58px;border-color:var(--brass-bright);}
+  #spotlight{
+    position:fixed; top:0; left:0; width:640px; height:640px;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle, rgba(230,189,130,0.10) 0%, rgba(230,189,130,0.035) 32%, transparent 68%);
+    pointer-events:none; z-index:2; mix-blend-mode:screen;
+    will-change:transform;
+  }
+
+  /* ---------------- curtain intro ---------------- */
+  #curtain{ position:fixed; inset:0; z-index:10000; display:flex; }
+  #curtain .panel{
+    width:50%; height:100%;
+    background:linear-gradient(120deg, var(--oxblood) 0%, var(--oxblood-bright) 40%, var(--oxblood) 100%);
+    position:relative; box-shadow:0 0 80px rgba(0,0,0,.5) inset;
+  }
+  #curtain .panel::after{
+    content:""; position:absolute; inset:0;
+    background-image:repeating-linear-gradient(90deg, rgba(0,0,0,.14) 0 3px, transparent 3px 26px);
+  }
+  #curtain .mark{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:2; text-align:center; }
+  #curtain .mark .staff{color:var(--brass-bright); margin:0 auto 14px; width:74px;}
+  #curtain .mark span{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.24em;
+    color:var(--paper); text-transform:uppercase; opacity:.85;
+  }
+
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--brass-bright); display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{ content:""; width:22px;height:1px; background:var(--brass-bright); display:inline-block; }
+  section.on-paper .eyebrow{color:var(--oxblood);}
+  section.on-paper .eyebrow::before{background:var(--oxblood);}
+
+  h1,h2,h3{ font-family:'Fraunces',serif; font-weight:460; letter-spacing:-0.01em; }
+  .wrap{ max-width:1200px; margin:0 auto; padding:0 40px; position:relative; }
+
+  .staff{ display:flex; flex-direction:column; gap:5px; width:64px; }
+  .staff span{ display:block; height:1px; background:currentColor; opacity:.55; }
+  .staff span:nth-child(1){width:100%;} .staff span:nth-child(2){width:78%;}
+  .staff span:nth-child(3){width:100%;} .staff span:nth-child(4){width:60%;} .staff span:nth-child(5){width:100%;}
+  .staff.play span{ transform-origin:left; animation:play 2.6s var(--ease) infinite; }
+  .staff.play span:nth-child(2){animation-delay:.1s;} .staff.play span:nth-child(3){animation-delay:.2s;}
+  .staff.play span:nth-child(4){animation-delay:.3s;} .staff.play span:nth-child(5){animation-delay:.4s;}
+  @keyframes play{ 0%,100%{opacity:.5;} 50%{opacity:1;} }
+
+  /* ---------------- nav ---------------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100; padding:26px 0;
+    background:linear-gradient(to bottom, rgba(14,13,16,.92), rgba(14,13,16,0));
+    transition:padding .4s var(--ease), background .4s var(--ease);
+  }
+  header.scrolled{ padding:16px 0; background:rgba(14,13,16,.86); backdrop-filter:blur(10px); border-bottom:1px solid var(--rule-ink); }
+  header .wrap{display:flex;align-items:center;justify-content:space-between;}
+  .logo{ display:flex;align-items:center;gap:14px; font-family:'Fraunces',serif; font-size:17px; color:var(--text-on-ink); }
+  .logo .staff{width:26px;color:var(--brass-bright);}
+  nav.links{display:flex;gap:36px;}
+  nav.links a{ font-size:13px; letter-spacing:.04em; color:var(--text-on-ink-dim); transition:color .25s; }
+  nav.links a:hover{color:var(--text-on-ink);}
+  .nav-cta{
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid var(--rule-ink); padding:9px 18px; border-radius:2px; transition:border-color .25s, color .25s;
+  }
+  .nav-cta:hover{border-color:var(--brass-bright);color:var(--brass-bright);}
+
+  /* ---------------- hero ---------------- */
+  .hero{ position:relative; min-height:100svh; display:flex; align-items:flex-end; overflow:hidden; }
+  .hero-canvas{ position:absolute; inset:0; z-index:0; opacity:.9; }
+  .hero-img-wrap{ position:absolute; top:0; right:0; width:58%; height:100%; clip-path:inset(0 0 0 100%); }
+  .hero-img{ width:100%;height:100%; object-fit:cover; object-position:64% 26%; filter:saturate(1.02) contrast(1.04); }
+  .hero::after{
+    content:""; position:absolute; inset:0; z-index:1;
+    background:
+      linear-gradient(100deg, rgba(14,13,16,.98) 0%, rgba(14,13,16,.92) 30%, rgba(14,13,16,.28) 54%, rgba(14,13,16,.05) 66%),
+      linear-gradient(to top, rgba(8,8,10,.92) 0%, rgba(8,8,10,0) 36%);
+  }
+  .hero-content{ position:relative; z-index:3; padding:0 40px 100px; max-width:1200px; margin:0 auto; width:100%; }
+  .hero-content .eyebrow{margin-bottom:26px;overflow:hidden;}
+  .hero h1{ font-size:clamp(46px, 8vw, 112px); line-height:.96; color:var(--paper); max-width:13ch; }
+  .hero h1 .line{ display:block; overflow:hidden; }
+  .hero h1 .line span{ display:inline-block; will-change:transform; }
+  .hero-role{
+    margin-top:22px; font-family:'Fraunces',serif; font-style:italic; font-weight:420;
+    font-size:clamp(17px,2vw,22px); color:var(--brass-bright); overflow:hidden;
+  }
+  .hero-sub{ margin-top:28px; max-width:48ch; color:var(--text-on-ink-dim); font-size:15.5px; overflow:hidden; }
+  .hero-scroll{
+    position:absolute; right:40px; bottom:40px; z-index:3;
+    display:flex; flex-direction:column; align-items:center; gap:14px; color:var(--text-on-ink-dim);
+  }
+  .hero-scroll span{ writing-mode:vertical-rl; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; }
+  .hero-scroll .line-el{ width:1px;height:52px; background:var(--rule-ink); position:relative; overflow:hidden; }
+  .hero-scroll .line-el::after{
+    content:""; position:absolute; top:-100%; left:0; width:100%; height:100%;
+    background:var(--brass-bright); animation:scrollpulse 2.6s var(--ease) infinite;
+  }
+  @keyframes scrollpulse{ 0%{top:-100%;} 60%{top:100%;} 100%{top:100%;} }
+
+  section{padding:132px 0;position:relative;}
+  section.on-paper{background:var(--paper);color:var(--text-on-paper);}
+  section.on-paper .text-dim{color:var(--text-on-paper-dim);}
+  .text-dim{color:var(--text-on-ink-dim);}
+
+  .section-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:40px; margin-bottom:64px; flex-wrap:wrap; }
+  .section-head h2{ font-size:clamp(30px,3.6vw,46px); margin-top:16px; max-width:16ch; }
+  .section-head .lede{ max-width:34ch; font-size:15px; padding-bottom:6px; }
+
+  /* ---------------- marquee ---------------- */
+  .marquee-band{
+    background:var(--ink-soft); border-top:1px solid var(--rule-ink); border-bottom:1px solid var(--rule-ink);
+    padding:26px 0; overflow:hidden; white-space:nowrap;
+  }
+  .marquee-track{ display:inline-flex; gap:0; animation:marquee 38s linear infinite; }
+  .marquee-band:hover .marquee-track{animation-play-state:paused;}
+  .marquee-track span{
+    font-family:'Fraunces',serif; font-style:italic; font-weight:420; font-size:19px;
+    color:var(--text-on-ink-dim); padding:0 34px; display:inline-flex; align-items:center; gap:34px;
+  }
+  .marquee-track span::after{content:"—"; color:var(--brass); font-style:normal;}
+  @keyframes marquee{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+  /* ---------------- manifesto ---------------- */
+  .manifesto{ display:grid; grid-template-columns:.9fr 1.6fr; gap:64px; align-items:start; }
+  .manifesto .staff{color:var(--oxblood);margin-bottom:28px;}
+  blockquote{
+    font-family:'Fraunces',serif; font-weight:420; font-style:italic; font-size:clamp(24px,2.6vw,34px);
+    line-height:1.4; color:var(--text-on-paper);
+  }
+
+  /* ---------------- work cards ---------------- */
+  .cards{ display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--rule-ink); border:1px solid var(--rule-ink); }
+  .card{ background:var(--ink); padding:46px 42px; transition:background .35s var(--ease), transform .35s var(--ease); }
+  .card:hover{background:var(--ink-soft); transform:translateY(-3px);}
+  .card svg{width:30px;height:30px;stroke:var(--brass-bright);fill:none;stroke-width:1.3;}
+  .card .num{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-on-ink-dim); letter-spacing:.08em; margin-top:18px; display:block; }
+  .card h3{ margin-top:10px; font-size:23px; font-weight:460; color:var(--paper); }
+  .card p{ margin-top:14px; font-size:14.5px; color:var(--text-on-ink-dim); max-width:40ch; }
+
+  /* ---------------- recognition ---------------- */
+  .stats-label{ padding:56px 0 0; }
+  .stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--rule-paper); border-top:1px solid var(--rule-paper); border-bottom:1px solid var(--rule-paper); }
+  .stat{ background:var(--paper); padding:44px 30px; text-align:left; }
+  .stat .n{ font-family:'Fraunces',serif; font-weight:560; font-size:clamp(28px,3vw,38px); color:var(--oxblood); line-height:1.1; }
+  .stat .l{ margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--text-on-paper-dim); line-height:1.5; }
+
+  /* ---------------- journey timeline ---------------- */
+  .timeline{border-top:1px solid var(--rule-paper); position:relative;}
+  .timeline .progress{ position:absolute; left:0; top:0; width:2px; background:var(--oxblood); height:0%; }
+  .t-row{ display:grid; grid-template-columns:150px 1fr 2.4fr; gap:32px; padding:32px 0 32px 20px; border-bottom:1px solid var(--rule-paper); align-items:baseline; }
+  .t-row .year{ font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--oxblood); letter-spacing:.02em; }
+  .t-row h4{ font-family:'Fraunces',serif; font-weight:500; font-size:19px; }
+  .t-row p{font-size:14.5px;color:var(--text-on-paper-dim);}
+
+  /* ---------------- process ---------------- */
+  .process{ display:grid; grid-template-columns:repeat(4,1fr); gap:0; position:relative; }
+  .process::before{ content:""; position:absolute; top:20px; left:5%; right:5%; height:1px; background:var(--rule-ink); z-index:0; }
+  .p-step{ position:relative; z-index:1; padding-right:24px; }
+  .p-step .dot{ width:11px;height:11px;border-radius:50%; background:var(--ink); border:2px solid var(--brass-bright); margin-bottom:26px; }
+  .p-step h4{ font-family:'Fraunces',serif; font-size:20px; font-weight:500; color:var(--paper); }
+  .p-step p{ margin-top:12px; font-size:14px; color:var(--text-on-ink-dim); max-width:30ch; }
+
+  /* ---------------- engagements list ---------------- */
+  .program{border-top:1px solid var(--rule-ink);}
+  .p-row{
+    display:grid; grid-template-columns:1fr auto auto; gap:28px; align-items:center;
+    padding:34px 0; border-bottom:1px solid var(--rule-ink); transition:padding-left .3s var(--ease), background .3s;
+  }
+  .p-row:hover{padding-left:16px; background:rgba(230,189,130,0.03);}
+  .p-row h4{ font-size:clamp(18px,2vw,24px); font-weight:460; color:var(--paper); }
+  .p-row h4 a{ border-bottom:1px solid transparent; transition:border-color .25s, color .25s; }
+  .p-row h4 a:hover{ color:var(--brass-bright); border-color:var(--brass-bright); }
+  .p-row .desc{ font-size:13.5px; color:var(--text-on-ink-dim); margin-top:8px; max-width:52ch; }
+  .tag{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase;
+    padding:7px 12px; border:1px solid var(--rule-ink); color:var(--brass-bright); white-space:nowrap; border-radius:2px;
+  }
+  .p-row .date{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-on-ink-dim); white-space:nowrap; }
+
+  /* ---------------- image break ---------------- */
+  .break{ position:relative; height:74vh; min-height:460px; overflow:hidden; }
+  .break-inner{ position:absolute; inset:0; }
+  .break img{ width:100%;height:112%;object-fit:cover; object-position:center 30%; filter:sepia(.16) saturate(1.05); }
+  .break::before{ content:""; position:absolute; inset:0; z-index:1; background:linear-gradient(0deg, rgba(109,31,44,.34), rgba(109,31,44,.34)); mix-blend-mode:multiply; }
+  .break::after{ content:""; position:absolute; inset:0; z-index:2; background:linear-gradient(to top, rgba(8,8,10,.92) 0%, rgba(8,8,10,.05) 42%); }
+  .break-cap{ position:absolute; left:40px;bottom:36px; z-index:3; max-width:520px; }
+  .break-cap p{ font-family:'Fraunces',serif; font-style:italic; font-size:clamp(16px,1.8vw,20px); color:var(--paper); }
+  .break-cap span{ display:block; margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--brass-bright); }
+
+  /* ---------------- testimonial ---------------- */
+  .testimonial{ max-width:840px; }
+  .testimonial .qmark{ font-family:'Fraunces',serif; font-size:76px; color:var(--oxblood); opacity:.22; line-height:1; }
+  .testimonial q{ display:block; font-family:'Fraunces',serif; font-style:italic; font-size:clamp(20px,2.4vw,28px); line-height:1.5; color:var(--text-on-paper); quotes:none; }
+  .testimonial .attrib{
+    margin-top:30px; padding-top:24px; border-top:1px solid var(--rule-paper);
+    display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:12px;
+  }
+  .testimonial .attrib strong{ font-family:'Fraunces',serif; font-weight:500; font-size:16px; }
+  .testimonial .attrib span{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-on-paper-dim); letter-spacing:.03em; }
+
+  /* ---------------- contact ---------------- */
+  .contact{ background:var(--ink); padding-top:120px; position:relative; overflow:hidden; }
+  .contact-grid{ display:grid; grid-template-columns:1.5fr 1fr; gap:60px; align-items:end; position:relative; z-index:2; }
+  .contact h2{ font-size:clamp(38px,6vw,76px); max-width:11ch; color:var(--paper); }
+  .contact .lede{ margin-top:24px; max-width:42ch; color:var(--text-on-ink-dim); font-size:15.5px; }
+  .contact-links{display:flex;flex-direction:column;gap:0;}
+  .clink{
+    display:flex;justify-content:space-between;align-items:center; padding:19px 0;
+    border-bottom:1px solid var(--rule-ink); font-size:15px; overflow:hidden; position:relative;
+  }
+  .clink span:first-child{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-on-ink-dim); }
+  .clink span:last-child{transition:transform .35s var(--ease), color .25s;}
+  .clink:hover span:last-child{color:var(--brass-bright); transform:translateX(6px);}
+
+  footer{
+    margin-top:100px; padding:28px 0 40px; border-top:1px solid var(--rule-ink);
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.05em; color:var(--text-on-ink-dim);
+    flex-wrap:wrap; gap:12px; position:relative; z-index:2;
+  }
+  footer a{color:var(--text-on-ink-dim);transition:color .2s;}
+  footer a:hover{color:var(--brass-bright);}
+
+  .magnetic{display:inline-block;}
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    #curtain{display:none;}
+    .staff.play span{animation:none;}
+  }
+
+  @media (max-width:920px){
+    body{cursor:auto;}
+    #cursor-dot,#cursor-ring,#spotlight{display:none;}
+    .wrap{padding:0 24px;}
+    nav.links{display:none;}
+    .hero-img-wrap{width:100%;opacity:.35;}
+    .manifesto{grid-template-columns:1fr;gap:32px;}
+    .cards{grid-template-columns:1fr;}
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .process{grid-template-columns:1fr;gap:36px;}
+    .process::before{display:none;}
+    .t-row{grid-template-columns:96px 1fr;}
+    .t-row p{grid-column:2/3;}
+    .contact-grid{grid-template-columns:1fr;gap:40px;}
+    .p-row{grid-template-columns:1fr;gap:10px;align-items:flex-start;}
+    section{padding:92px 0;}
+    .hero-content{padding:0 24px 64px;}
+    .hero-scroll{display:none;}
+  }
+</style>
 </head>
-<body style="background:#111;color:#fff;font-family:sans-serif;text-align:center;padding-top:80px;">
-  <h1>Se você está vendo isso, o deploy funcionou.</h1>
-  <p>index.html de teste — sem CSS externo, sem JS, sem imagens.</p>
+<body>
+
+<div id="curtain" aria-hidden="true">
+  <div class="panel left"></div>
+  <div class="panel right"></div>
+  <div class="mark">
+    <div class="staff play"><span></span><span></span><span></span><span></span><span></span></div>
+    <span>Mateus Belloni</span>
+  </div>
+</div>
+
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div id="spotlight"></div>
+
+<header id="site-header">
+  <div class="wrap">
+    <a href="#top" class="logo magnetic">
+      <span class="staff"><span></span><span></span><span></span><span></span><span></span></span>
+      Mateus Belloni
+    </a>
+    <nav class="links">
+      <a href="#work">Work</a>
+      <a href="#journey">Journey</a>
+      <a href="#engagements">Engagements</a>
+      <a href="#testimonial">Testimonial</a>
+    </nav>
+    <a href="#contact" class="nav-cta magnetic">Contact</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <canvas class="hero-canvas" id="strings"></canvas>
+    <div class="hero-img-wrap" id="hero-img-wrap">
+      <img class="hero-img" src="assets/hero-portrait.webp" alt="Mateus Belloni holding a violin" fetchpriority="high">
+    </div>
+    <div class="hero-content">
+      <div class="eyebrow" id="hero-eyebrow">Concertmaster · Artistic Direction &amp; Concert Production</div>
+      <h1 id="hero-title">
+        <span class="line"><span>Mateus</span></span>
+        <span class="line"><span>Belloni</span></span>
+      </h1>
+      <div class="hero-role" id="hero-role">From the concertmaster's chair to the director's desk.</div>
+      <p class="hero-sub" id="hero-sub">Concertmaster of the Strauss Operetta Symphony Orchestra, laureate of the
+        Concorso Argento, and a growing voice in artistic direction and concert production across Europe and Asia.</p>
+    </div>
+    <div class="hero-scroll">
+      <div class="line-el"></div>
+      <span>Scroll to explore the work</span>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-band">
+    <div class="marquee-track">
+      <span>Wiener Konzerthaus</span><span>Strauss Operetta Symphony Orchestra</span>
+      <span>Vienna Quartiere Artistico</span><span>International Tour, China</span>
+      <span>Concorso Argento — Laureate 2025</span>
+      <span>Wiener Konzerthaus</span><span>Strauss Operetta Symphony Orchestra</span>
+      <span>Vienna Quartiere Artistico</span><span>International Tour, China</span>
+      <span>Concorso Argento — Laureate 2025</span>
+    </div>
+  </div>
+
+  <!-- MANIFESTO -->
+  <section class="on-paper">
+    <div class="wrap manifesto">
+      <div class="reveal">
+        <div class="staff"><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="eyebrow">About</div>
+      </div>
+      <div class="reveal">
+        <blockquote>
+          Years on stage taught him the repertoire. Leading an orchestra as concertmaster taught him
+          something else — how a season actually gets built, decision by decision, long before an
+          audience takes its seat.
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section id="work">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">What he leads</div>
+          <h2>From curation to contract, from the empty hall to the sold-out one.</h2>
+        </div>
+        <p class="lede text-dim">Four areas of work that reinforce one another — none of them
+          functions in isolation.</p>
+      </div>
+
+      <div class="cards reveal">
+        <div class="card">
+          <svg viewBox="0 0 24 24"><path d="M4 20 L20 4 M14 4 h6 v6"/></svg>
+          <span class="num">01</span>
+          <h3>Artistic Direction</h3>
+          <p>Repertoire curation, soloist selection and the musical identity of seasons and
+            festivals, from the first outline to opening night.</p>
+        </div>
+        <div class="card">
+          <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="1"/><path d="M8 7 V5 a2 2 0 0 1 2 -2 h4 a2 2 0 0 1 2 2 v2"/></svg>
+          <span class="num">02</span>
+          <h3>Concert Production</h3>
+          <p>Planning, budgeting and execution of performances — from chamber recitals to
+            multi-city symphonic programmes.</p>
+        </div>
+        <div class="card">
+          <svg viewBox="0 0 24 24"><circle cx="7" cy="12" r="3.4"/><circle cx="17" cy="12" r="3.4"/><path d="M10.2 12 h3.6"/></svg>
+          <span class="num">03</span>
+          <h3>Institutional Partnerships</h3>
+          <p>Coordination between concert halls, sponsors, orchestras and cultural institutions to
+            sustain projects over the medium and long term.</p>
+        </div>
+        <div class="card">
+          <svg viewBox="0 0 24 24"><path d="M12 3 v18 M6 8 c0 -3 3 -3 3 0 s-3 3 -3 0 M18 16 c0 -3 -3 -3 -3 0 s3 3 3 0"/></svg>
+          <span class="num">04</span>
+          <h3>Career Guidance</h3>
+          <p>Strategic support for musicians and ensembles building international careers, from
+            touring schedules to public positioning.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECOGNITION -->
+  <section class="on-paper" style="padding-top:0;">
+    <div class="wrap stats-label reveal">
+      <div class="eyebrow">Recognition</div>
+    </div>
+    <div class="stats reveal">
+      <div class="stat"><div class="n">2023</div><div class="l">Concertmaster,<br>Strauss Operetta Symphony Orchestra</div></div>
+      <div class="stat"><div class="n">2024</div><div class="l">Wiener Konzerthaus,<br>"In Hope and Memory"</div></div>
+      <div class="stat"><div class="n">2024–25</div><div class="l">International Tour of<br>New Year's Concerts, China</div></div>
+      <div class="stat"><div class="n">2025</div><div class="l">Laureate,<br>Concorso Argento</div></div>
+    </div>
+  </section>
+
+  <!-- JOURNEY -->
+  <section id="journey" class="on-paper">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">Journey</div>
+          <h2>From the stand to the director's desk.</h2>
+        </div>
+        <p class="lede text-dim">A record built one engagement at a time — each one widening the
+          scope of the next.</p>
+      </div>
+
+      <div class="timeline reveal">
+        <div class="progress" id="tl-progress"></div>
+        <div class="t-row">
+          <div class="year">Dec 2023</div>
+          <h4>Concertmaster debut</h4>
+          <p>Joins the Strauss Operetta Symphony Orchestra (Vienna Quartiere Artistico) as
+            Concertmaster for the International Tour of New Year's Concerts in China, produced by
+            Hebei Arts Agency Ltd.</p>
+        </div>
+        <div class="t-row">
+          <div class="year">Mar 2024</div>
+          <h4>Wiener Konzerthaus, Vienna</h4>
+          <p>Performs as Concertmaster in "In Hope and Memory" at the Wiener Konzerthaus — a
+            programme built around emerging talent alongside internationally acclaimed artists.</p>
+        </div>
+        <div class="t-row">
+          <div class="year">Dec 2024 – Jan 2025</div>
+          <h4>Returns to the podium</h4>
+          <p>Reprises the role of Concertmaster for the orchestra's following International Tour of
+            New Year's Concerts in China.</p>
+        </div>
+        <div class="t-row">
+          <div class="year">2025</div>
+          <h4>Laureate, Concorso Argento</h4>
+          <p>Recognised as a laureate of the Concorso Argento, 2025 edition.</p>
+        </div>
+        <div class="t-row" style="border-bottom:none;">
+          <div class="year">Today</div>
+          <h4>Building the next chapter</h4>
+          <p>Expanding from performance into artistic direction and concert production — applying
+            the same discipline behind the stand to the decisions behind the season.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section>
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">How it works</div>
+          <h2>From first conversation to opening night.</h2>
+        </div>
+      </div>
+      <div class="process reveal">
+        <div class="p-step">
+          <div class="dot"></div>
+          <h4>Diagnosis</h4>
+          <p>Understanding the goal, the audience and the available budget before any proposal is made.</p>
+        </div>
+        <div class="p-step">
+          <div class="dot"></div>
+          <h4>Curation</h4>
+          <p>Defining repertoire, soloist line-up and format — shaped for the venue and the occasion.</p>
+        </div>
+        <div class="p-step">
+          <div class="dot"></div>
+          <h4>Production</h4>
+          <p>Contracts, logistics, sponsorship and the relationship with the venue — the part the audience never sees.</p>
+        </div>
+        <div class="p-step">
+          <div class="dot"></div>
+          <h4>Stage</h4>
+          <p>Execution, real-time coordination and a review of results at the close of every performance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ENGAGEMENTS -->
+  <section id="engagements">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">Selected Engagements</div>
+          <h2>A record, not a pitch.</h2>
+        </div>
+        <p class="lede text-dim">A short list of real engagements and recognitions — verifiable,
+          not promotional.</p>
+      </div>
+
+      <div class="program">
+        <div class="p-row reveal">
+          <div>
+            <h4><a href="https://konzerthaus.at/concert/eventid/61588" target="_blank" rel="noopener">"In Hope and Memory" — Wiener Konzerthaus, Vienna ↗</a></h4>
+            <p class="desc">Concertmaster, produced by Vienna Quartiere Artistico / Strauss Operetta Symphony Orchestra.</p>
+          </div>
+          <span class="date">March 2024</span>
+          <span class="tag">Performed</span>
+        </div>
+        <div class="p-row reveal">
+          <div>
+            <h4>International Tour of New Year's Concerts, China</h4>
+            <p class="desc">Concertmaster, produced by Hebei Arts Agency Ltd in partnership with Vienna Quartiere Artistico.</p>
+          </div>
+          <span class="date">Dec 2023 – Jan 2024</span>
+          <span class="tag">Completed</span>
+        </div>
+        <div class="p-row reveal">
+          <div>
+            <h4>International Tour of New Year's Concerts, China</h4>
+            <p class="desc">Reprised the role of Concertmaster for the orchestra's following international tour.</p>
+          </div>
+          <span class="date">Dec 2024 – Jan 2025</span>
+          <span class="tag">Completed</span>
+        </div>
+        <div class="p-row reveal">
+          <div>
+            <h4><a href="https://www.concorsoargento.it/it/edizione-2025/" target="_blank" rel="noopener">Concorso Argento, 2025 Edition ↗</a></h4>
+            <p class="desc">Recognised as a laureate of the competition's 2025 edition.</p>
+          </div>
+          <span class="date">2025</span>
+          <span class="tag">Laureate</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMAGE BREAK -->
+  <div class="break">
+    <div class="break-inner" id="break-inner">
+      <img src="assets/stage.webp" alt="Mateus Belloni beside a pianist, on stage" loading="lazy">
+    </div>
+    <div class="break-cap">
+      <p>"Every season is decided months before a single light comes up on stage."</p>
+      <span>Behind the production</span>
+    </div>
+  </div>
+
+  <!-- TESTIMONIAL -->
+  <section id="testimonial" class="on-paper">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">Recommendation</div>
+          <h2>In his colleagues' own words.</h2>
+        </div>
+      </div>
+
+      <div class="testimonial reveal">
+        <div class="qmark">"</div>
+        <q>Mr Belloni has fostered style, originality, interest, creativity and excellence in his
+          work as Concertmaster. His easy-going manner and managing skills inspired the members of
+          the orchestra to be motivated and give their best throughout an extremely demanding tour.
+          He has become a tremendous asset to our projects.</q>
+        <div class="attrib">
+          <strong>Chryso Makariou</strong>
+          <span>Vienna Quartiere Artistico / Strauss Operetta Symphony Orchestra — Letter of recommendation, 23 June 2024</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <div class="contact-grid reveal">
+        <div>
+          <div class="eyebrow">Contact</div>
+          <h2>Let's plan the next season.</h2>
+          <p class="lede">For production proposals, artistic direction, institutional partnerships
+            or representation — reach out directly.</p>
+        </div>
+        <div class="contact-links">
+          <a class="clink" href="mailto:ceo@mateusbelloni.com"><span>Email</span><span>ceo@mateusbelloni.com</span></a>
+          <a class="clink" href="tel:+393500419888"><span>Phone (Italy)</span><span>+39 350 041 9888</span></a>
+          <a class="clink" href="tel:+19087337720"><span>Phone (United States)</span><span>+1 908 733 7720</span></a>
+          <div class="clink" style="border-bottom:none;"><span>Based between</span><span>Italy &amp; United States</span></div>
+        </div>
+      </div>
+
+      <footer>
+        <span>© <span id="year"></span> Mateus Belloni — Concertmaster, Artistic Direction &amp; Production</span>
+        <span>Site custom-built</span>
+      </footer>
+    </div>
+  </section>
+
+</main>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isCoarse = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+
+/* header shrink */
+const header = document.getElementById('site-header');
+const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 40);
+document.addEventListener('scroll', onScroll, {passive:true});
+onScroll();
+
+/* custom cursor + spotlight */
+if(!isCoarse){
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  const spot = document.getElementById('spotlight');
+  let mx=innerWidth/2, my=innerHeight/2, rx=mx, ry=my;
+  document.addEventListener('mousemove', e=>{
+    mx=e.clientX; my=e.clientY;
+    dot.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
+    spot.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
+  });
+  function ringLoop(){
+    rx += (mx-rx)*0.16; ry += (my-ry)*0.16;
+    ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+    requestAnimationFrame(ringLoop);
+  }
+  ringLoop();
+  document.querySelectorAll('a,button,.card,.p-row,.clink').forEach(el=>{
+    el.addEventListener('mouseenter', ()=>ring.classList.add('hovered'));
+    el.addEventListener('mouseleave', ()=>ring.classList.remove('hovered'));
+  });
+}
+
+/* magnetic buttons */
+if(!isCoarse){
+  document.querySelectorAll('.magnetic').forEach(el=>{
+    el.addEventListener('mousemove', e=>{
+      const r = el.getBoundingClientRect();
+      const relX = e.clientX - r.left - r.width/2;
+      const relY = e.clientY - r.top - r.height/2;
+      el.style.transform = `translate(${relX*0.22}px, ${relY*0.35}px)`;
+    });
+    el.addEventListener('mouseleave', ()=>{ el.style.transform=''; });
+  });
+}
+
+/* curtain intro */
+const curtain = document.getElementById('curtain');
+window.addEventListener('load', ()=>{
+  if(reduceMotion || typeof gsap==='undefined'){
+    curtain.style.display='none';
+    playHero();
+    return;
+  }
+  gsap.registerPlugin(ScrollTrigger);
+  const tl = gsap.timeline({ delay:.15, onComplete:()=>{ curtain.style.display='none'; playHero(); ScrollTrigger.refresh(); } });
+  tl.to(curtain.querySelector('.mark'), {opacity:0, duration:.35, delay:.55})
+    .to(curtain.querySelector('.left'), {xPercent:-100, duration:.9, ease:'power4.inOut'}, '-=.05')
+    .to(curtain.querySelector('.right'), {xPercent:100, duration:.9, ease:'power4.inOut'}, '<');
+});
+
+function playHero(){
+  if(typeof gsap==='undefined') return;
+  gsap.to('#hero-img-wrap', {clipPath:'inset(0 0 0 0%)', duration:1.3, ease:'power4.out'});
+  gsap.timeline()
+    .to('#hero-eyebrow', {opacity:1, y:0, duration:.01})
+    .from('.hero h1 .line span', {yPercent:110, duration:.9, ease:'power4.out', stagger:.08}, 0)
+    .from('#hero-role', {opacity:0, y:14, duration:.7, ease:'power3.out'}, '-=.4')
+    .from('#hero-sub', {opacity:0, y:14, duration:.7, ease:'power3.out'}, '-=.5');
+}
+
+/* scroll reveals */
+if(typeof gsap!=='undefined'){
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.utils.toArray('.reveal').forEach(el=>{
+    gsap.fromTo(el, {opacity:0, y:26}, {
+      opacity:1, y:0, duration:.9, ease:'power3.out',
+      scrollTrigger:{ trigger:el, start:'top 88%' }
+    });
+  });
+
+  /* timeline progress */
+  ScrollTrigger.create({
+    trigger:'.timeline', start:'top 60%', end:'bottom 80%', scrub:.4,
+    onUpdate: self=>{ document.getElementById('tl-progress').style.height = (self.progress*100)+'%'; }
+  });
+
+  /* parallax break image */
+  gsap.to('#break-inner img', {
+    yPercent:-10, ease:'none',
+    scrollTrigger:{ trigger:'.break', start:'top bottom', end:'bottom top', scrub:true }
+  });
+}
+
+/* hero canvas: bowed strings */
+(function(){
+  const canvas = document.getElementById('strings');
+  const ctx = canvas.getContext('2d');
+  let w,h,dpr=Math.min(window.devicePixelRatio||1,2);
+  function size(){
+    w = canvas.parentElement.offsetWidth; h = canvas.parentElement.offsetHeight;
+    canvas.width = w*dpr; canvas.height = h*dpr;
+    canvas.style.width=w+'px'; canvas.style.height=h+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  size(); window.addEventListener('resize', size);
+
+  let mouseX = -1000, mouseY = -1000;
+  window.addEventListener('mousemove', e=>{
+    const r = canvas.getBoundingClientRect();
+    mouseX = e.clientX - r.left; mouseY = e.clientY - r.top;
+  });
+
+  const strings = [0.30,0.42,0.54,0.66].map((yr,i)=>({
+    yr, freq: 0.010 + i*0.0016, amp: 5 + i*1.4, phase: i*1.7, speed: 0.014 + i*0.003
+  }));
+
+  let t=0;
+  function draw(){
+    t += 1;
+    ctx.clearRect(0,0,w,h);
+    const activeW = Math.min(w, w*0.58);
+    strings.forEach(s=>{
+      const baseY = h*s.yr;
+      ctx.beginPath();
+      for(let x=0; x<=activeW; x+=6){
+        const distToMouse = Math.abs(x-mouseX)+Math.abs(baseY-mouseY);
+        const boost = Math.max(0, 1 - distToMouse/220) * 14;
+        const y = baseY + Math.sin(x*s.freq + t*s.speed + s.phase) * (s.amp + boost);
+        if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.strokeStyle = 'rgba(230,189,130,0.16)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+    requestAnimationFrame(draw);
+  }
+  if(!reduceMotion) draw();
+})();
+</script>
+
 </body>
 </html>
