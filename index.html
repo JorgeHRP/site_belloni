@@ -238,6 +238,10 @@
     padding:7px 12px; border:1px solid var(--rule-ink); color:var(--brass-bright); white-space:nowrap; border-radius:2px;
   }
   .p-row .date{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-on-ink-dim); white-space:nowrap; }
+  .p-row.cancelled h4{ color:var(--text-on-ink-dim); text-decoration:line-through; text-decoration-thickness:1px; }
+  .program + .section-head{ margin-top:120px; }
+  .tour-list{ list-style:none; display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:8px 28px; margin-top:16px; max-width:720px; font-size:13.5px; color:var(--text-on-ink-dim); }
+  .tour-list span{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--brass-bright); margin-right:8px; }
 
   /* ---------------- image break ---------------- */
   .break{ position:relative; height:74vh; min-height:460px; overflow:hidden; }
@@ -336,7 +340,7 @@
     <nav class="links">
       <a href="#work">Work</a>
       <a href="#journey">Journey</a>
-      <a href="#engagements">Engagements</a>
+      <a href="#engagements">Agenda</a>
       <a href="#testimonial">Testimonial</a>
     </nav>
     <a href="#contact" class="nav-cta magnetic">Contact</a>
@@ -541,6 +545,115 @@
     <div class="wrap">
       <div class="section-head reveal">
         <div>
+          <div class="eyebrow">Confirmed Engagements</div>
+          <h2>Season 2026–27.</h2>
+        </div>
+        <p class="lede text-dim">Where he will be, city by city — from Bulgaria to Brazil,
+          Vienna and a New Year's tour across China.</p>
+      </div>
+
+      <div class="program">
+        <div class="p-row reveal">
+          <div>
+            <h4>Vratsa &amp; around Bulgaria 🇧🇬</h4>
+          </div>
+          <span class="date">2 – 31 Oct 2026</span>
+          <span class="tag">Completed</span>
+        </div>
+        <div class="p-row reveal cancelled">
+          <div>
+            <h4>Concerts &amp; festival, France 🇫🇷</h4>
+            <p class="desc">All concerts and the festival in France are cancelled.</p>
+          </div>
+          <span class="date">2026</span>
+          <span class="tag">Cancelled</span>
+        </div>
+        <div class="p-row reveal">
+          <div>
+            <h4>Sofia 🇧🇬</h4>
+          </div>
+          <span class="date">1 – 6 Nov 2026</span>
+          <span class="tag">Confirmed</span>
+        </div>
+        <div class="p-row reveal">
+          <div>
+            <h4>Berlin 🇩🇪</h4>
+          </div>
+          <span class="date">7 – 14 Nov 2026</span>
+          <span class="tag">Confirmed</span>
+        </div>
+        <div class="p-row reveal">
+          <div>
+            <h4>Barcelona 🇪🇸</h4>
+          </div>
+          <span class="date">14 – 21 Nov 2026</span>
+          <span class="tag">Confirmed</span>
+        </div>
+        <div class="p-row reveal">
+          <div>
+            <h4>London 🇬🇧</h4>
+          </div>
+          <span class="date">22 – 29 Nov 2026</span>
+          <span class="tag">Confirmed</span>
+        </div>
+        <div class="p-row reveal">
+          <div>
+            <h4>Brazil 🇧🇷</h4>
+            <p class="desc">São Paulo, Cuiabá, Goiânia and Belo Horizonte.</p>
+          </div>
+          <span class="date">29 Nov – 19 Dec 2026</span>
+          <span class="tag">Confirmed</span>
+        </div>
+        <div class="p-row reveal">
+          <div>
+            <h4>Vienna 🇦🇹</h4>
+            <p class="desc">Flying in from São Paulo.</p>
+          </div>
+          <span class="date">21 – 24 Dec 2026</span>
+          <span class="tag">Confirmed</span>
+        </div>
+        <div class="p-row reveal">
+          <div>
+            <h4>International Tour of New Year's Concerts, China 🇨🇳</h4>
+            <p class="desc">Guest Violin Soloist and Concertmaster.</p>
+            <ul class="tour-list">
+              <li><span>24 Dec</span>Ningbo</li>
+              <li><span>25 Dec</span>Shenzhen</li>
+              <li><span>27 Dec</span>Xiamen</li>
+              <li><span>28 Dec</span>Fuzhou</li>
+              <li><span>29 Dec</span>Guangzhou</li>
+              <li><span>30 Dec</span>Nanning</li>
+              <li><span>1 Jan</span>Chengdu</li>
+              <li><span>2 Jan</span>Chongqing</li>
+              <li><span>3 Jan</span>Guilin</li>
+              <li><span>5 Jan</span>Liuzhou</li>
+              <li><span>6 Jan</span>Guiyang</li>
+              <li><span>7 Jan</span>Kunming</li>
+              <li><span>8 – 9 Jan</span>Shanghai</li>
+            </ul>
+          </div>
+          <span class="date">24 Dec 2026 – 9 Jan 2027</span>
+          <span class="tag">Confirmed</span>
+        </div>
+        <div class="p-row reveal">
+          <div>
+            <h4>Milano 🇮🇹</h4>
+          </div>
+          <span class="date">10 Jan 2027</span>
+          <span class="tag">Confirmed</span>
+        </div>
+        <div class="p-row reveal">
+          <div>
+            <h4>Milano, Greece 🇬🇷 — and a month of rest</h4>
+            <p class="desc">Time to stop. Vacation — see you in 2027.</p>
+          </div>
+          <span class="date">From 10 Jan 2027</span>
+          <span class="tag">Vacation</span>
+        </div>
+      </div>
+
+      <div class="section-head reveal">
+        <div>
           <div class="eyebrow">Selected Engagements</div>
           <h2>A record, not a pitch.</h2>
         </div>
@@ -568,10 +681,10 @@
         <div class="p-row reveal">
           <div>
             <h4>International Tour of New Year's Concerts, China</h4>
-            <p class="desc">Reprised the role of Concertmaster for the orchestra's following international tour.</p>
+            <p class="desc">Returns as Guest Violin Soloist and Concertmaster for the orchestra's following international tour.</p>
           </div>
           <span class="date">Dec 2026 – Jan 2027</span>
-          <span class="tag">Completed</span>
+          <span class="tag">Confirmed</span>
         </div>
         <div class="p-row reveal">
           <div>
